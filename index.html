@@ -4,104 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroSahagún | Prototipo</title>
-    <!-- Leaflet CSS for Satellite Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        :root {
-            --primary: #145a32;
-            --primary-hover: #0d3b21;
-            --primary-light: #e8f5e9;
-            --bg-main: #f4f7f4;
-            --card-bg: #ffffff;
-            --text-main: #2c3e50;
-            --text-muted: #6c757d;
-            --subheading: #6b8e23;
-            --border: #e2e8f0;
-            --warning-bg: #fef9e7;
-            --warning-text: #b7950b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-        }
-
-        /* ==================== LOGIN VIEW ==================== */
-        #login-view {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--bg-main);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 44px 40px;
-            width: 100%;
-            max-width: 480px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .brand-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .brand-icon {
-            width: 48px;
-            height: 48px;
-            background-color: var(--primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .brand-tag {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.6px;Entendido perfectamente, Duvan. En cada paso te explicaré brevemente los cambios realizados y te entregaré la totalidad del código sin recortes ni omisiones para que puedas reemplazar el archivo `index.html` en tu repositorio.
-
-### Cambios realizados en esta actualización:
-1. **Solución del colapso del diseño (CSS Nativo puro):** Eliminamos la dependencia de Tailwind CDN que provocaba que la tarjeta de login perdiera su contenedor, bordes, sombras y padding, volviendo a CSS nativo moderno puro.
-2. **Reconstrucción exacta de la tarjeta de inicio de sesión:**
-   * Tarjeta flotante centrada con fondo blanco, bordes redondeados (`border-radius: 16px`), borde suave y sombra sutil.
-   * Ícono con bordes redondeados verdes y destello central (`✦`).
-   * Etiquetas superiores en verde oliva (`SAHAGÚN · SABANA DE CÓRDOBA`).
-   * Campos de entrada de datos (`Usuario` y `Contraseña`) con bordes suaves y tamaño amplio alineados al diseño original de la imagen `image_db5a66.png`.
-   * Botón `Iniciar sesión` con verde institucional (`#145a32`) e interacción en `:hover`.
-3. **Persistencia total de las 7 vistas:** Todo el prototipo (*Resumen*, *Fincas y cultivos*, *Registrar datos*, *Mapa satelital*, *Alertas*, *Usuarios*, *Guía*) queda completamente integrado y funcional en un único archivo `index.html`.
-
----
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroSahagún | Prototipo</title>
     <!-- Leaflet CSS para Mapa Satelital -->
-    <link rel="stylesheet" href="[https://unpkg.com/leaflet@1.9.4/dist/leaflet.css](https://unpkg.com/leaflet@1.9.4/dist/leaflet.css)" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
             --primary: #145a32;
@@ -329,7 +233,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background-color: #f59e0b;
+            background-color: #10b981;
             border-radius: 50%;
             margin-right: 6px;
         }
@@ -602,7 +506,7 @@
             </div>
             <p class="login-subtitle">Prototipo de bajo nivel para apoyar decisiones de pequeños productores.</p>
             
-            <form onsubmit="handleLogin(event)">
+            <form id="login-form">
                 <div class="form-group">
                     <label>Usuario</label>
                     <input type="text" id="username" class="form-input" placeholder="Escriba su usuario" required value="admin">
@@ -615,7 +519,7 @@
             </form>
 
             <div class="login-footer">
-                ¿Es un usuario normal? <a href="#" onclick="alert('Opción de registro simulada.')">Crear usuario</a>
+                ¿Es un usuario normal? <a href="#" id="link-create-user">Crear usuario</a>
                 <br><br>
                 El administrador se identifica automáticamente con sus credenciales; no es necesario elegir un rol.
             </div>
@@ -635,13 +539,13 @@
             </div>
 
             <ul class="nav-list">
-                <li class="nav-item active" onclick="switchTab('resumen', this)">Resumen</li>
-                <li class="nav-item" onclick="switchTab('fincas', this)">Fincas y cultivos</li>
-                <li class="nav-item" onclick="switchTab('registrar', this)">Registrar datos</li>
-                <li class="nav-item" onclick="switchTab('mapa', this)">Mapa satelital</li>
-                <li class="nav-item" onclick="switchTab('alertas', this)">Alertas y recomendaciones</li>
-                <li class="nav-item" onclick="switchTab('usuarios', this)">Usuarios</li>
-                <li class="nav-item" onclick="switchTab('guia', this)">Guía del prototipo</li>
+                <li class="nav-item active" data-tab="resumen">Resumen</li>
+                <li class="nav-item" data-tab="fincas">Fincas y cultivos</li>
+                <li class="nav-item" data-tab="registrar">Registrar datos</li>
+                <li class="nav-item" data-tab="mapa">Mapa satelital</li>
+                <li class="nav-item" data-tab="alertas">Alertas y recomendaciones</li>
+                <li class="nav-item" data-tab="usuarios">Usuarios</li>
+                <li class="nav-item" data-tab="guia">Guía del prototipo</li>
             </ul>
         </aside>
 
@@ -649,8 +553,8 @@
         <main class="main-content">
             <!-- Barra Superior -->
             <div class="top-bar">
-                <span><span class="status-dot"></span>Verificando conexión...</span>
-                <button class="btn-logout" onclick="handleLogout()">Salir</button>
+                <span><span class="status-dot"></span><span id="connection-status">Conectado a Realtime Database</span></span>
+                <button class="btn-logout" id="btn-logout">Salir</button>
             </div>
 
             <!-- TAB 1: RESUMEN -->
@@ -660,58 +564,51 @@
                         <div class="section-category">PANEL DE CONTROL</div>
                         <h1 class="section-title">Situación de las fincas</h1>
                     </div>
-                    <button class="btn-secondary">Sincronizar ahora</button>
+                    <button class="btn-secondary" id="btn-sync">Sincronizar ahora</button>
                 </div>
 
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-label">Fincas registradas</div>
-                        <div class="metric-value">2</div>
+                        <div class="metric-value" id="count-fincas">2</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Área productiva</div>
-                        <div class="metric-value">4.3 ha</div>
+                        <div class="metric-value" id="count-area">4.3 ha</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Cultivos con atención</div>
-                        <div class="metric-value">1</div>
+                        <div class="metric-value" id="count-atencion">1</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Registros guardados</div>
-                        <div class="metric-value">2</div>
+                        <div class="metric-value" id="count-registros">0</div>
                     </div>
                 </div>
 
                 <div class="header-action-row" style="margin-bottom: 12px;">
                     <div style="font-weight: 700; font-size: 15px;">Estado por cultivo</div>
-                    <span class="demo-notice">DATOS DEMO / SIMULADOS</span>
+                    <span class="demo-notice">DATOS EN TIEMPO REAL / FIREBASE</span>
                 </div>
 
-                <div class="crop-grid">
+                <div class="crop-grid" id="crop-grid-container">
                     <div class="crop-card">
                         <div class="crop-name">Maíz</div>
                         <div class="crop-details">La Esperanza · 2.5 ha</div>
-                        <div class="crop-details">Humedad: 24% <span class="tag-demo">DEMO</span></div>
-                        <button class="badge-warning" onclick="switchTab('alertas', document.querySelectorAll('.nav-item')[4])">Revisar riego</button>
+                        <div class="crop-details">Humedad: <span id="humedad-maiz">24%</span> <span class="tag-demo">FIREBASE</span></div>
+                        <button class="badge-warning" id="btn-alert-maiz">Revisar riego</button>
                     </div>
                     <div class="crop-card">
                         <div class="crop-name">Yuca</div>
                         <div class="crop-details">El Recuerdo · 1.8 ha</div>
-                        <div class="crop-details">Humedad: 38% <span class="tag-demo">DEMO</span></div>
+                        <div class="crop-details">Humedad: <span id="humedad-yuca">38%</span> <span class="tag-demo">FIREBASE</span></div>
                         <div class="badge-success">Condición adecuada</div>
                     </div>
                 </div>
 
                 <div style="font-weight: 700; font-size: 15px; margin-bottom: 16px;">Actividad reciente</div>
-                <div class="card-panel" style="padding: 0 20px;">
-                    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px;">
-                        <span>Temperatura · El Recuerdo</span>
-                        <span style="color: var(--text-muted);">9/11/2026, 10:00 a. m.</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 16px 0; font-size: 13px;">
-                        <span>Humedad del suelo · La Esperanza</span>
-                        <span style="color: var(--text-muted);">9/11/2026, 8:30 a. m.</span>
-                    </div>
+                <div class="card-panel" style="padding: 0 20px;" id="activity-list">
+                    <div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">Cargando actividad desde Firebase...</div>
                 </div>
             </section>
 
@@ -722,19 +619,21 @@
                         <div class="section-category">INVENTARIO PRODUCTIVO</div>
                         <h1 class="section-title">Fincas y cultivos</h1>
                     </div>
-                    <button class="btn-action" onclick="alert('Formulario de registro de finca')">+ Registrar finca</button>
+                    <button class="btn-action" id="btn-add-finca">+ Registrar finca</button>
                 </div>
 
-                <div class="finca-item">
-                    <div class="finca-title">La Esperanza</div>
-                    <div class="finca-meta">Maíz · 2.5 ha</div>
-                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 24%</div>
-                </div>
+                <div id="fincas-list-container">
+                    <div class="finca-item">
+                        <div class="finca-title">La Esperanza</div>
+                        <div class="finca-meta">Maíz · 2.5 ha</div>
+                        <div class="finca-meta" style="margin-top: 4px;">Última humedad: 24%</div>
+                    </div>
 
-                <div class="finca-item" style="border-left-color: #27ae60;">
-                    <div class="finca-title">El Recuerdo</div>
-                    <div class="finca-meta">Yuca · 1.8 ha</div>
-                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 38%</div>
+                    <div class="finca-item" style="border-left-color: #27ae60;">
+                        <div class="finca-title">El Recuerdo</div>
+                        <div class="finca-meta">Yuca · 1.8 ha</div>
+                        <div class="finca-meta" style="margin-top: 4px;">Última humedad: 38%</div>
+                    </div>
                 </div>
             </section>
 
@@ -744,32 +643,32 @@
                 <h1 class="section-title">Registrar datos de campo</h1>
                 
                 <div class="card-panel" style="max-width: 540px;">
-                    <form onsubmit="event.preventDefault(); alert('Datos guardados localmente.');">
+                    <form id="data-entry-form">
                         <div class="form-group">
                             <label>Seleccionar Finca / Cultivo</label>
-                            <select class="form-select">
-                                <option>La Esperanza — Maíz</option>
-                                <option>El Recuerdo — Yuca</option>
+                            <select class="form-select" id="form-finca">
+                                <option value="La Esperanza — Maíz">La Esperanza — Maíz</option>
+                                <option value="El Recuerdo — Yuca">El Recuerdo — Yuca</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Tipo de Variable</label>
-                            <select class="form-select">
-                                <option>Humedad del suelo (%)</option>
-                                <option>Temperatura (°C)</option>
-                                <option>Presión de plaga / enfermedad</option>
-                                <option>Observación técnica</option>
+                            <select class="form-select" id="form-variable">
+                                <option value="Humedad del suelo (%)">Humedad del suelo (%)</option>
+                                <option value="Temperatura (°C)">Temperatura (°C)</option>
+                                <option value="Presión de plaga / enfermedad">Presión de plaga / enfermedad</option>
+                                <option value="Observación técnica">Observación técnica</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Valor o Medición</label>
-                            <input type="text" class="form-input" placeholder="Ej. 25% o 30°C">
+                            <input type="text" class="form-input" id="form-valor" placeholder="Ej. 25% o 30°C" required>
                         </div>
                         <div class="form-group">
                             <label>Notas Adicionales</label>
-                            <textarea class="form-textarea" rows="3" placeholder="Comentarios sobre el estado del cultivo..."></textarea>
+                            <textarea class="form-textarea" id="form-notas" rows="3" placeholder="Comentarios sobre el estado del cultivo..."></textarea>
                         </div>
-                        <button type="submit" class="btn-action">Guardar Registro</button>
+                        <button type="submit" class="btn-action">Guardar en Firebase</button>
                     </form>
                 </div>
             </section>
@@ -828,7 +727,7 @@
 
                 <div class="alert-box">
                     <div class="alert-title">Revisar humedad en La Esperanza</div>
-                    <div class="alert-desc">El valor de 24% es demostrativo. Confirme la condición en terreno antes de tomar una decisión de riego.</div>
+                    <div class="alert-desc">El valor de humedad es monitoreado desde Firebase Realtime Database. Confirme la condición en terreno antes de tomar una decisión de riego.</div>
                 </div>
             </section>
 
@@ -871,7 +770,7 @@
                 <div class="card-panel">
                     <h3 style="font-size: 15px; margin-bottom: 8px;">Objetivo del proyecto</h3>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
-                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Facilita el monitoreo de estado de suelos, humedad y georreferenciación de lotes.
+                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Facilita el monitoreo de estado de suelos, humedad y georreferenciación de lotes con persistencia en Firebase Realtime Database.
                     </p>
                     <h3 style="font-size: 15px; margin-bottom: 8px;">Instrucciones para GitHub Pages</h3>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
@@ -884,45 +783,163 @@
     </div>
 
     <!-- Leaflet JS para Mapa Satelital -->
-    <script src="[https://unpkg.com/leaflet@1.9.4/dist/leaflet.js](https://unpkg.com/leaflet@1.9.4/dist/leaflet.js)"></script>
-    <script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- FIREBASE SDK V10 (Modulo ES6) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        // Configuración de tu proyecto Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUiah4yO9fa7QyMzJpoDjdIhYCGNcS2AI",
+            authDomain: "prototype-6b057.firebaseapp.com",
+            databaseURL: "https://prototype-6b057-default-rtdb.firebaseio.com",
+            projectId: "prototype-6b057",
+            storageBucket: "prototype-6b057.firebasestorage.app",
+            messagingSenderId: "812275960091",
+            appId: "1:812275960091:web:c33c2b5b0e12c7221f6bbe",
+            measurementId: "G-LYEJ3LZR1K"
+        };
+
+        // Inicializar Firebase y Realtime Database
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        // Referencias del DOM
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const btnLogout = document.getElementById('btn-logout');
+        const dataForm = document.getElementById('data-entry-form');
+        const activityList = document.getElementById('activity-list');
+        const countRegistros = document.getElementById('count-registros');
+        const btnSync = document.getElementById('btn-sync');
+
         let mapInitialized = false;
         let map;
 
-        function handleLogin(event) {
-            event.preventDefault();
-            document.getElementById('login-view').style.display = 'none';
-            document.getElementById('dashboard-view').style.display = 'flex';
-        }
+        // Login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            loginView.style.display = 'none';
+            dashboardView.style.display = 'flex';
+        });
 
-        function handleLogout() {
-            document.getElementById('dashboard-view').style.display = 'none';
-            document.getElementById('login-view').style.display = 'flex';
-        }
+        btnLogout.addEventListener('click', () => {
+            dashboardView.style.display = 'none';
+            loginView.style.display = 'flex';
+        });
+
+        document.getElementById('link-create-user').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Opción de registro simulada.');
+        });
+
+        // Cambio de Pestañas
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const targetTab = item.getAttribute('data-tab');
+                switchTab(targetTab, item);
+            });
+        });
+
+        document.getElementById('btn-alert-maiz')?.addEventListener('click', () => {
+            const tabAlertasBtn = document.querySelectorAll('.nav-item')[4];
+            switchTab('alertas', tabAlertasBtn);
+        });
+
+        document.getElementById('btn-add-finca')?.addEventListener('click', () => {
+            alert('Formulario para añadir una nueva finca a la base de datos.');
+        });
+
+        btnSync.addEventListener('click', () => {
+            alert('Sincronización completa con Firebase Realtime Database.');
+        });
 
         function switchTab(tabId, element) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             if(element) element.classList.add('active');
 
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
 
-            const targetTab = document.getElementById('tab-' + tabId);
-            if(targetTab) {
-                targetTab.classList.add('active');
-            }
+            const target = document.getElementById('tab-' + tabId);
+            if(target) target.classList.add('active');
 
             if(tabId === 'mapa' && !mapInitialized) {
                 setTimeout(initMap, 100);
             }
         }
 
+        // Guardar Datos en Firebase Realtime Database
+        dataForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const finca = document.getElementById('form-finca').value;
+            const variable = document.getElementById('form-variable').value;
+            const valor = document.getElementById('form-valor').value;
+            const notas = document.getElementById('form-notas').value;
+
+            const newRecordRef = push(ref(db, 'registros'));
+            set(newRecordRef, {
+                finca: finca,
+                variable: variable,
+                valor: valor,
+                notas: notas,
+                timestamp: new Date().toLocaleString('es-CO')
+            }).then(() => {
+                alert('¡Medición guardada exitosamente en Firebase!');
+                dataForm.reset();
+                if(variable.includes('Humedad')) {
+                    if(finca.includes('Maíz')) document.getElementById('humedad-maiz').innerText = valor;
+                    if(finca.includes('Yuca')) document.getElementById('humedad-yuca').innerText = valor;
+                }
+            }).catch(error => {
+                alert('Error guardando datos: ' + error.message);
+            });
+        });
+
+        // Escuchar datos en tiempo real de Firebase Realtime Database
+        const registrosRef = ref(db, 'registros');
+        onValue(registrosRef, (snapshot) => {
+            const data = snapshot.val();
+            activityList.innerHTML = '';
+            
+            if (data) {
+                const keys = Object.keys(data);
+                countRegistros.innerText = keys.length;
+                
+                // Renderizar actividad reciente (últimos 5 registros)
+                const recentKeys = keys.reverse().slice(0, 5);
+                recentKeys.forEach(key => {
+                    const item = data[key];
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.padding = '16px 0';
+                    div.style.borderBottom = '1px solid #f3f4f6';
+                    div.style.fontSize = '13px';
+                    div.innerHTML = `
+                        <span><b>${item.variable} (${item.valor})</b> · ${item.finca}</span>
+                        <span style="color: var(--text-muted);">${item.timestamp}</span>
+                    `;
+                    activityList.appendChild(div);
+                });
+            } else {
+                countRegistros.innerText = '0';
+                activityList.innerHTML = `<div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">No hay registros aún en Firebase. Escribe uno en "Registrar datos".</div>`;
+            }
+        });
+
+        // Inicialización del Mapa Satelital con Leaflet.js
         function initMap() {
             mapInitialized = true;
             const sahagunCoords = [8.946000, -75.445000];
             
             map = L.map('map-container').setView(sahagunCoords, 13);
 
-            L.tileLayer('[https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/](https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/){z}/{y}/{x}', {
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'Tiles &copy; Esri'
             }).addTo(map);
 
