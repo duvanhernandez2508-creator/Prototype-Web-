@@ -17,6 +17,8 @@
             --text-muted: #6c757d;
             --subheading: #6b8e23;
             --border: #e0e0e0;
+            --danger: #c0392b;
+            --danger-hover: #922b21;
         }
 
         * {
@@ -275,6 +277,21 @@
             font-weight: 700;
             font-size: 13px;
             cursor: pointer;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
         }
 
         .btn-secondary {
@@ -718,34 +735,58 @@
                 </div>
             </section>
 
-            <!-- TAB 6: USUARIOS -->
+            <!-- TAB 6: USUARIOS Y GESTIÓN ADMINISTRATIVA -->
             <section id="tab-usuarios" class="tab-content">
                 <div class="section-category">ADMINISTRACIÓN</div>
-                <h1 class="section-title">Roles de la demostración</h1>
+                <h1 class="section-title">Gestión de Usuarios y Roles</h1>
 
-                <div class="card-panel" style="padding: 0;">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Rol</th>
-                                <th>Acceso principal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><b>Administrador</b></td>
-                                <td style="color: var(--text-muted);" id="user-table-email">duvanhernandez2508@gmail.com</td>
-                            </tr>
-                            <tr>
-                                <td><b>Productor / cliente</b></td>
-                                <td style="color: var(--text-muted);">Registra sus fincas y observaciones.</td>
-                            </tr>
-                            <tr>
-                                <td><b>Asesor técnico</b></td>
-                                <td style="color: var(--text-muted);">Consulta datos y formula recomendaciones.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <!-- Tabla de Usuarios -->
+                    <div class="card-panel" style="padding: 0;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuario / ID</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Rol</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted);">Cargando usuarios desde Firebase...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Formulario para Crear Usuario -->
+                    <div class="card-panel">
+                        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">Crear nuevo usuario</h3>
+                        <form id="create-user-form">
+                            <div class="form-group">
+                                <label>Identificador (ID / Nombre)</label>
+                                <input type="text" id="new-user-id" class="form-input" placeholder="Ej. juan_perez" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="new-user-email" class="form-input" placeholder="correo@ejemplo.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type="password" id="new-user-pass" class="form-input" placeholder="Asigne contraseña" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Rol asignado</label>
+                                <select id="new-user-role" class="form-select">
+                                    <option value="Productor / cliente">Productor / cliente</option>
+                                    <option value="Asesor técnico">Asesor técnico</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-action" style="width: 100%;">Crear Usuario en Firebase</button>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -757,7 +798,7 @@
                 <div class="card-panel">
                     <h3 style="font-size: 15px; margin-bottom: 8px;">Objetivo del proyecto</h3>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
-                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Integrado con validación de credenciales desde Firebase Realtime Database.
+                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Integrado con validación de credenciales y gestión de roles desde Firebase Realtime Database.
                     </p>
                 </div>
             </section>
@@ -770,7 +811,7 @@
     <!-- FIREBASE SDK V10 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, get, child, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAUiah4yO9fa7QyMzJpoDjdIhYCGNcS2AI",
@@ -791,14 +832,16 @@
         const loginForm = document.getElementById('login-form');
         const btnLogout = document.getElementById('btn-logout');
         const dataForm = document.getElementById('data-entry-form');
+        const createUserForm = document.getElementById('create-user-form');
         const activityList = document.getElementById('activity-list');
         const countRegistros = document.getElementById('count-registros');
+        const usersTableBody = document.getElementById('users-table-body');
         const btnLoginSubmit = document.getElementById('btn-login-submit');
 
         let mapInitialized = false;
         let map;
 
-        // INICIO DE SESIÓN CON VALIDACIÓN DE CORREO Y CLAVE DESDE REALTIME DATABASE
+        // INICIO DE SESIÓN
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const inputUser = document.getElementById('username').value.trim();
@@ -851,6 +894,61 @@
             document.getElementById('password').value = '';
         });
 
+        // CREAR USUARIO DESDE PANEL DE ADMINISTRACIÓN
+        createUserForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('new-user-id').value.trim();
+            const userEmail = document.getElementById('new-user-email').value.trim();
+            const userPass = document.getElementById('new-user-pass').value.trim();
+            const userRole = document.getElementById('new-user-role').value;
+
+            set(ref(db, 'usuarios/' + userId), {
+                correo: userEmail,
+                clave: userPass,
+                rol: userRole
+            }).then(() => {
+                alert('¡Usuario registrado exitosamente en Firebase!');
+                createUserForm.reset();
+            }).catch(error => {
+                alert('Error al crear usuario: ' + error.message);
+            });
+        });
+
+        // LISTAR Y ELIMINAR USUARIOS EN TIEMPO REAL
+        onValue(ref(db, 'usuarios'), (snapshot) => {
+            const usuarios = snapshot.val();
+            usersTableBody.innerHTML = '';
+
+            if (usuarios) {
+                for (let key in usuarios) {
+                    const u = usuarios[key];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${key}</b></td>
+                        <td style="color: var(--text-muted);">${u.correo}</td>
+                        <td><b>${u.rol}</b></td>
+                        <td>
+                            ${key !== 'admin' ? `<button class="btn-danger" onclick="deleteUser('${key}')">Eliminar</button>` : `<span style="font-size: 11px; color: var(--text-muted);">Principal</span>`}
+                        </td>
+                    `;
+                    usersTableBody.appendChild(tr);
+                }
+            } else {
+                usersTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No hay usuarios registrados.</td></tr>`;
+            }
+        });
+
+        // FUNCIÓN GLOBAL PARA ELIMINAR USUARIO
+        window.deleteUser = function(userId) {
+            if (confirm(`¿Está seguro de que desea eliminar al usuario "${userId}" de Firebase?`)) {
+                remove(ref(db, 'usuarios/' + userId)).then(() => {
+                    alert('Usuario eliminado correctamente.');
+                }).catch(error => {
+                    alert('Error al eliminar usuario: ' + error.message);
+                });
+            }
+        };
+
         // CAMBIO DE PESTAÑAS
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -873,7 +971,7 @@
             }
         }
 
-        // GUARDAR DATOS EN REALTIME DATABASE
+        // GUARDAR DATOS DE CAMPO
         dataForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const finca = document.getElementById('form-finca').value;
