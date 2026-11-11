@@ -33,9 +33,7 @@
             display: flex;
         }
 
-        /* --------------------------------------------------
-           VISTA DE LOGIN (Centrado y tarjeta según captura)
-        -------------------------------------------------- */
+        /* VISTA DE LOGIN */
         #login-view {
             width: 100%;
             min-height: 100vh;
@@ -155,9 +153,7 @@
             text-decoration: none;
         }
 
-        /* --------------------------------------------------
-           DASHBOARD PRINCIPAL
-        -------------------------------------------------- */
+        /* DASHBOARD PRINCIPAL */
         #dashboard-view {
             display: none;
             width: 100%;
@@ -292,7 +288,6 @@
             cursor: pointer;
         }
 
-        /* Grid de métricas */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -320,7 +315,6 @@
             color: #111827;
         }
 
-        /* Grid de cultivos */
         .crop-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -415,7 +409,6 @@
             color: var(--text-muted);
         }
 
-        /* Mapa Satelital */
         .map-layout {
             display: grid;
             grid-template-columns: 3fr 2fr;
@@ -451,7 +444,6 @@
             color: var(--text-muted);
         }
 
-        /* Tabla personalizada */
         .custom-table {
             width: 100%;
             border-collapse: collapse;
@@ -508,14 +500,14 @@
             
             <form id="login-form">
                 <div class="form-group">
-                    <label>Usuario</label>
-                    <input type="text" id="username" class="form-input" placeholder="Escriba su usuario" required value="admin">
+                    <label>Usuario o Correo</label>
+                    <input type="text" id="username" class="form-input" placeholder="Escriba su usuario o correo" required value="duvanhernandez2508@gmail.com">
                 </div>
                 <div class="form-group">
                     <label>Contraseña</label>
-                    <input type="password" class="form-input" placeholder="Escriba su contraseña" required value="123456">
+                    <input type="password" id="password" class="form-input" placeholder="Escriba su contraseña" required value="Agro2026">
                 </div>
-                <button type="submit" class="btn-primary">Iniciar sesión</button>
+                <button type="submit" id="btn-login-submit" class="btn-primary">Iniciar sesión</button>
             </form>
 
             <div class="login-footer">
@@ -528,13 +520,12 @@
 
     <!-- DASHBOARD PRINCIPAL -->
     <div id="dashboard-view">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="brand-icon">✦</div>
                 <div>
                     <div style="font-weight: 800; font-size: 15px;">AgroSahagún</div>
-                    <div class="sidebar-user">Usuario · Administrador</div>
+                    <div class="sidebar-user" id="user-display">Usuario · Administrador</div>
                 </div>
             </div>
 
@@ -549,11 +540,9 @@
             </ul>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="main-content">
-            <!-- Barra Superior -->
             <div class="top-bar">
-                <span><span class="status-dot"></span><span id="connection-status">Conectado a Realtime Database</span></span>
+                <span><span class="status-dot"></span>Conectado a Realtime Database</span>
                 <button class="btn-logout" id="btn-logout">Salir</button>
             </div>
 
@@ -570,15 +559,15 @@
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-label">Fincas registradas</div>
-                        <div class="metric-value" id="count-fincas">2</div>
+                        <div class="metric-value">2</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Área productiva</div>
-                        <div class="metric-value" id="count-area">4.3 ha</div>
+                        <div class="metric-value">4.3 ha</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Cultivos con atención</div>
-                        <div class="metric-value" id="count-atencion">1</div>
+                        <div class="metric-value">1</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Registros guardados</div>
@@ -591,7 +580,7 @@
                     <span class="demo-notice">DATOS EN TIEMPO REAL / FIREBASE</span>
                 </div>
 
-                <div class="crop-grid" id="crop-grid-container">
+                <div class="crop-grid">
                     <div class="crop-card">
                         <div class="crop-name">Maíz</div>
                         <div class="crop-details">La Esperanza · 2.5 ha</div>
@@ -608,11 +597,11 @@
 
                 <div style="font-weight: 700; font-size: 15px; margin-bottom: 16px;">Actividad reciente</div>
                 <div class="card-panel" style="padding: 0 20px;" id="activity-list">
-                    <div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">Cargando actividad desde Firebase...</div>
+                    <div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</div>
                 </div>
             </section>
 
-            <!-- TAB 2: FINCAS Y CULTIVOS -->
+            <!-- TAB 2: FINCAS -->
             <section id="tab-fincas" class="tab-content">
                 <div class="header-action-row">
                     <div>
@@ -622,18 +611,16 @@
                     <button class="btn-action" id="btn-add-finca">+ Registrar finca</button>
                 </div>
 
-                <div id="fincas-list-container">
-                    <div class="finca-item">
-                        <div class="finca-title">La Esperanza</div>
-                        <div class="finca-meta">Maíz · 2.5 ha</div>
-                        <div class="finca-meta" style="margin-top: 4px;">Última humedad: 24%</div>
-                    </div>
+                <div class="finca-item">
+                    <div class="finca-title">La Esperanza</div>
+                    <div class="finca-meta">Maíz · 2.5 ha</div>
+                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 24%</div>
+                </div>
 
-                    <div class="finca-item" style="border-left-color: #27ae60;">
-                        <div class="finca-title">El Recuerdo</div>
-                        <div class="finca-meta">Yuca · 1.8 ha</div>
-                        <div class="finca-meta" style="margin-top: 4px;">Última humedad: 38%</div>
-                    </div>
+                <div class="finca-item" style="border-left-color: #27ae60;">
+                    <div class="finca-title">El Recuerdo</div>
+                    <div class="finca-meta">Yuca · 1.8 ha</div>
+                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 38%</div>
                 </div>
             </section>
 
@@ -699,12 +686,12 @@
 
                         <div class="form-group">
                             <label>Latitud</label>
-                            <input type="text" class="form-input" placeholder="Ej.: 8.946000" id="map-lat" value="8.946000">
+                            <input type="text" class="form-input" id="map-lat" value="8.946000">
                         </div>
 
                         <div class="form-group">
                             <label>Longitud</label>
-                            <input type="text" class="form-input" placeholder="Ej.: -75.445000" id="map-lng" value="-75.445000">
+                            <input type="text" class="form-input" id="map-lng" value="-75.445000">
                         </div>
 
                         <div class="form-group">
@@ -720,7 +707,7 @@
                 </div>
             </section>
 
-            <!-- TAB 5: ALERTAS Y RECOMENDACIONES -->
+            <!-- TAB 5: ALERTAS -->
             <section id="tab-alertas" class="tab-content">
                 <div class="section-category">APOYO A DECISIONES</div>
                 <h1 class="section-title">Alertas y recomendaciones</h1>
@@ -747,7 +734,7 @@
                         <tbody>
                             <tr>
                                 <td><b>Administrador</b></td>
-                                <td style="color: var(--text-muted);">Consulta general y gestión de usuarios.</td>
+                                <td style="color: var(--text-muted);" id="user-table-email">duvanhernandez2508@gmail.com</td>
                             </tr>
                             <tr>
                                 <td><b>Productor / cliente</b></td>
@@ -762,36 +749,29 @@
                 </div>
             </section>
 
-            <!-- TAB 7: GUÍA DEL PROTOTIPO -->
+            <!-- TAB 7: GUÍA -->
             <section id="tab-guia" class="tab-content">
                 <div class="section-category">DOCUMENTACIÓN</div>
                 <h1 class="section-title">Guía del prototipo AgroSahagún</h1>
 
                 <div class="card-panel">
                     <h3 style="font-size: 15px; margin-bottom: 8px;">Objetivo del proyecto</h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
-                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Facilita el monitoreo de estado de suelos, humedad y georreferenciación de lotes con persistencia en Firebase Realtime Database.
-                    </p>
-                    <h3 style="font-size: 15px; margin-bottom: 8px;">Instrucciones para GitHub Pages</h3>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
-                        Este archivo single-page está listo para alojarse de forma gratuita en GitHub Pages renombrándolo como <code>index.html</code> en la raíz de tu repositorio.
+                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Integrado con validación de credenciales desde Firebase Realtime Database.
                     </p>
                 </div>
             </section>
-
         </main>
     </div>
 
-    <!-- Leaflet JS para Mapa Satelital -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- FIREBASE SDK V10 (Modulo ES6) -->
+    <!-- FIREBASE SDK V10 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // Configuración de tu proyecto Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAUiah4yO9fa7QyMzJpoDjdIhYCGNcS2AI",
             authDomain: "prototype-6b057.firebaseapp.com",
@@ -803,12 +783,9 @@
             measurementId: "G-LYEJ3LZR1K"
         };
 
-        // Inicializar Firebase y Realtime Database
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
-        // Referencias del DOM
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
         const loginForm = document.getElementById('login-form');
@@ -816,47 +793,70 @@
         const dataForm = document.getElementById('data-entry-form');
         const activityList = document.getElementById('activity-list');
         const countRegistros = document.getElementById('count-registros');
-        const btnSync = document.getElementById('btn-sync');
+        const btnLoginSubmit = document.getElementById('btn-login-submit');
 
         let mapInitialized = false;
         let map;
 
-        // Login
-        loginForm.addEventListener('submit', (e) => {
+        // INICIO DE SESIÓN CON VALIDACIÓN DE CORREO Y CLAVE DESDE REALTIME DATABASE
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            loginView.style.display = 'none';
-            dashboardView.style.display = 'flex';
+            const inputUser = document.getElementById('username').value.trim();
+            const inputPass = document.getElementById('password').value.trim();
+
+            btnLoginSubmit.innerText = "Verificando en Firebase...";
+            btnLoginSubmit.disabled = true;
+
+            try {
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, 'usuarios'));
+
+                if (snapshot.exists()) {
+                    const usuarios = snapshot.val();
+                    let usuarioValido = false;
+
+                    for (let key in usuarios) {
+                        const u = usuarios[key];
+                        if (
+                            (inputUser === u.correo || inputUser === key) &&
+                            inputPass === u.clave
+                        ) {
+                            usuarioValido = true;
+                            document.getElementById('user-display').innerText = `${u.correo} · ${u.rol}`;
+                            break;
+                        }
+                    }
+
+                    if (usuarioValido) {
+                        loginView.style.display = 'none';
+                        dashboardView.style.display = 'flex';
+                    } else {
+                        alert("Credenciales incorrectas. Verifique el correo/usuario y la contraseña ingresados.");
+                    }
+                } else {
+                    alert("No se encontraron usuarios en la base de datos.");
+                }
+            } catch (error) {
+                alert("Error de conexión con Firebase: " + error.message);
+            } finally {
+                btnLoginSubmit.innerText = "Iniciar sesión";
+                btnLoginSubmit.disabled = false;
+            }
         });
 
+        // CIERRE DE SESIÓN
         btnLogout.addEventListener('click', () => {
             dashboardView.style.display = 'none';
             loginView.style.display = 'flex';
+            document.getElementById('password').value = '';
         });
 
-        document.getElementById('link-create-user').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Opción de registro simulada.');
-        });
-
-        // Cambio de Pestañas
+        // CAMBIO DE PESTAÑAS
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 const targetTab = item.getAttribute('data-tab');
                 switchTab(targetTab, item);
             });
-        });
-
-        document.getElementById('btn-alert-maiz')?.addEventListener('click', () => {
-            const tabAlertasBtn = document.querySelectorAll('.nav-item')[4];
-            switchTab('alertas', tabAlertasBtn);
-        });
-
-        document.getElementById('btn-add-finca')?.addEventListener('click', () => {
-            alert('Formulario para añadir una nueva finca a la base de datos.');
-        });
-
-        btnSync.addEventListener('click', () => {
-            alert('Sincronización completa con Firebase Realtime Database.');
         });
 
         function switchTab(tabId, element) {
@@ -873,7 +873,7 @@
             }
         }
 
-        // Guardar Datos en Firebase Realtime Database
+        // GUARDAR DATOS EN REALTIME DATABASE
         dataForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const finca = document.getElementById('form-finca').value;
@@ -891,18 +891,13 @@
             }).then(() => {
                 alert('¡Medición guardada exitosamente en Firebase!');
                 dataForm.reset();
-                if(variable.includes('Humedad')) {
-                    if(finca.includes('Maíz')) document.getElementById('humedad-maiz').innerText = valor;
-                    if(finca.includes('Yuca')) document.getElementById('humedad-yuca').innerText = valor;
-                }
             }).catch(error => {
-                alert('Error guardando datos: ' + error.message);
+                alert('Error al guardar datos: ' + error.message);
             });
         });
 
-        // Escuchar datos en tiempo real de Firebase Realtime Database
-        const registrosRef = ref(db, 'registros');
-        onValue(registrosRef, (snapshot) => {
+        // ESCUCHAR REGISTROS EN TIEMPO REAL
+        onValue(ref(db, 'registros'), (snapshot) => {
             const data = snapshot.val();
             activityList.innerHTML = '';
             
@@ -910,9 +905,7 @@
                 const keys = Object.keys(data);
                 countRegistros.innerText = keys.length;
                 
-                // Renderizar actividad reciente (últimos 5 registros)
-                const recentKeys = keys.reverse().slice(0, 5);
-                recentKeys.forEach(key => {
+                keys.reverse().slice(0, 5).forEach(key => {
                     const item = data[key];
                     const div = document.createElement('div');
                     div.style.display = 'flex';
@@ -928,11 +921,11 @@
                 });
             } else {
                 countRegistros.innerText = '0';
-                activityList.innerHTML = `<div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">No hay registros aún en Firebase. Escribe uno en "Registrar datos".</div>`;
+                activityList.innerHTML = `<div style="padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 13px;">No hay registros grabados en Firebase.</div>`;
             }
         });
 
-        // Inicialización del Mapa Satelital con Leaflet.js
+        // MAPA SATELITAL
         function initMap() {
             mapInitialized = true;
             const sahagunCoords = [8.946000, -75.445000];
