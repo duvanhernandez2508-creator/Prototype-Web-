@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSahagún | Prototipo</title>
+    <!-- Leaflet CSS for Satellite Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #145a32;
+            --primary-hover: #0d3b21;
+            --primary-light: #e8f5e9;
+            --bg-main: #f4f7f4;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #6c757d;
+            --subheading: #6b8e23;
+            --border: #e0e0e0;
+            --warning-bg: #fef9e7;
+            --warning-text: #b7950b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Login Screen Styles */
+        #login-view {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-main);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background-color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .brand-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #6b8e23;
+            text-transform: uppercase;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111;
+            line-height: 1.1;
+        }
+
+        .login-subtitle {
+            font-size: 15px;
+            color: #4a5568;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* Main Dashboard Layout */
+        #dashboard-view {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-main);
+            padding: 24px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-user {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #4a5568;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(0,0,0,0.03);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            background: #fafcfb;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #f59e0b;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .section-category {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--subheading);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a202c;
+            margin-bottom: 24px;
+        }
+
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #2d3748;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Metric Cards Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a202c;
+        }
+
+        /* Status Crop Cards */
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .crop-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .crop-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .crop-details {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .tag-demo {
+            background: #feebc8;
+            color: #744210;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 6px;
+        }
+
+        .badge-warning {
+            background: #feebc8;
+            color: #9c4221;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Lists & Containers */
+        .card-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            margin-bottom: 24px;
+        }
+
+        .finca-item {
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            background: #fff;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            border-top: 1px solid #edf2f7;
+            border-right: 1px solid #edf2f7;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .finca-title {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .finca-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Map Section Layout */
+        .map-layout {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 24px;
+        }
+
+        #map-container {
+            height: 480px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+            overflow: hidden;
+        }
+
+        .alert-box {
+            background: #fff;
+            border-left: 4px solid #ecc94b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            border-top: 1px solid #edf2f7;
+            border-right: 1px solid #edf2f7;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .alert-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Table Design */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .custom-table th {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .custom-table td {
+            padding: 16px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 13px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .demo-notice {
+            background: #feebc8;
+            color: #744210;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-view">
+        <div class="login-card">
+            <div class="brand-header">
+                <div class="brand-icon">✦</div>
+                <div>
+                    <div class="brand-tag">SAHAGÚN · SABANA DE CÓRDOBA</div>
+                    <div class="brand-title">AgroSahagún</div>
+                </div>
+            </div>
+            <p class="login-subtitle">Prototipo de bajo nivel para apoyar decisiones de pequeños productores.</p>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="username" class="form-input" placeholder="Escriba su usuario" required value="admin">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" class="form-input" placeholder="Escriba su contraseña" required value="123456">
+                </div>
+                <button type="submit" class="btn-primary">Iniciar sesión</button>
+            </form>
+
+            <div class="login-footer">
+                ¿Es un usuario normal? <a href="#" onclick="alert('Opción de registro simulada.')">Crear usuario</a>
+                <br><br>
+                El administrador se identifica automáticamente con sus credenciales; no es necesario elegir un rol.
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD APP -->
+    <div id="dashboard-view">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">✦</div>
+                <div>
+                    <div style="font-weight: 800; font-size: 16px;">AgroSahagún</div>
+                    <div class="sidebar-user">Usuario · Administrador</div>
+                </div>
+            </div>
+
+            <ul class="nav-list">
+                <li class="nav-item active" onclick="switchTab('resumen', this)">Resumen</li>
+                <li class="nav-item" onclick="switchTab('fincas', this)">Fincas y cultivos</li>
+                <li class="nav-item" onclick="switchTab('registrar', this)">Registrar datos</li>
+                <li class="nav-item" onclick="switchTab('mapa', this)">Mapa satelital</li>
+                <li class="nav-item" onclick="switchTab('alertas', this)">Alertas y recomendaciones</li>
+                <li class="nav-item" onclick="switchTab('usuarios', this)">Usuarios</li>
+                <li class="nav-item" onclick="switchTab('guia', this)">Guía del prototipo</li>
+            </ul>
+        </aside>
+
+        <!-- Main Body Content -->
+        <main class="main-content">
+            <!-- Top Status Bar -->
+            <div class="top-bar">
+                <span><span class="status-dot"></span>Verificando conexión...</span>
+                <button class="btn-logout" onclick="handleLogout()">Salir</button>
+            </div>
+
+            <!-- TAB 1: RESUMEN -->
+            <section id="tab-resumen" class="tab-content active">
+                <div class="header-action-row">
+                    <div>
+                        <div class="section-category">PANEL DE CONTROL</div>
+                        <h1 class="section-title">Situación de las fincas</h1>
+                    </div>
+                    <button class="btn-secondary">Sincronizar ahora</button>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Fincas registradas</div>
+                        <div class="metric-value">2</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Área productiva</div>
+                        <div class="metric-value">4.3 ha</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Cultivos con atención</div>
+                        <div class="metric-value">1</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Registros guardados</div>
+                        <div class="metric-value">2</div>
+                    </div>
+                </div>
+
+                <div class="header-action-row" style="margin-bottom: 12px;">
+                    <div style="font-weight: 700; font-size: 16px;">Estado por cultivo</div>
+                    <span class="demo-notice">DATOS DEMO / SIMULADOS</span>
+                </div>
+
+                <div class="crop-grid">
+                    <div class="crop-card">
+                        <div class="crop-name">Maíz</div>
+                        <div class="crop-details">La Esperanza · 2.5 ha</div>
+                        <div class="crop-details">Humedad: 24% <span class="tag-demo">DEMO</span></div>
+                        <button class="badge-warning" onclick="switchTab('alertas', document.querySelectorAll('.nav-item')[4])">Revisar riego</button>
+                    </div>
+                    <div class="crop-card">
+                        <div class="crop-name">Yuca</div>
+                        <div class="crop-details">El Recuerdo · 1.8 ha</div>
+                        <div class="crop-details">Humedad: 38% <span class="tag-demo">DEMO</span></div>
+                        <div class="badge-success">Condición adecuada</div>
+                    </div>
+                </div>
+
+                <div style="font-weight: 700; font-size: 16px; margin-bottom: 16px;">Actividad reciente</div>
+                <div class="card-panel" style="padding: 0 20px;">
+                    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #edf2f7; font-size: 13px;">
+                        <span>Temperatura · El Recuerdo</span>
+                        <span style="color: var(--text-muted);">9/11/2026, 10:00 a. m.</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 16px 0; font-size: 13px;">
+                        <span>Humedad del suelo · La Esperanza</span>
+                        <span style="color: var(--text-muted);">9/11/2026, 8:30 a. m.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: FINCAS Y CULTIVOS -->
+            <section id="tab-fincas" class="tab-content">
+                <div class="header-action-row">
+                    <div>
+                        <div class="section-category">INVENTARIO PRODUCTIVO</div>
+                        <h1 class="section-title">Fincas y cultivos</h1>
+                    </div>
+                    <button class="btn-action" onclick="alert('Formulario de registro de finca')">+ Registrar finca</button>
+                </div>
+
+                <div class="finca-item">
+                    <div class="finca-title">La Esperanza</div>
+                    <div class="finca-meta">Maíz · 2.5 ha</div>
+                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 24%</div>
+                </div>
+
+                <div class="finca-item" style="border-left-color: #27ae60;">
+                    <div class="finca-title">El Recuerdo</div>
+                    <div class="finca-meta">Yuca · 1.8 ha</div>
+                    <div class="finca-meta" style="margin-top: 4px;">Última humedad: 38%</div>
+                </div>
+            </section>
+
+            <!-- TAB 3: REGISTRAR DATOS -->
+            <section id="tab-registrar" class="tab-content">
+                <div class="section-category">INGRESO DE INFORMACIÓN</div>
+                <h1 class="section-title">Registrar datos de campo</h1>
+                
+                <div class="card-panel" style="max-width: 600px;">
+                    <form onsubmit="event.preventDefault(); alert('Datos guardados localmente.');">
+                        <div class="form-group">
+                            <label>Seleccionar Finca / Cultivo</label>
+                            <select class="form-select">
+                                <option>La Esperanza — Maíz</option>
+                                <option>El Recuerdo — Yuca</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Variable</label>
+                            <select class="form-select">
+                                <option>Humedad del suelo (%)</option>
+                                <option>Temperatura (°C)</option>
+                                <option>Presión de plaga / enfermedad</option>
+                                <option>Observación técnica</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valor o Medición</label>
+                            <input type="text" class="form-input" placeholder="Ej. 25% o 30°C">
+                        </div>
+                        <div class="form-group">
+                            <label>Notas Adicionales</label>
+                            <textarea class="form-textarea" rows="3" placeholder="Comentarios sobre el estado del cultivo..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-action">Guardar Registro</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 4: MAPA SATELITAL -->
+            <section id="tab-mapa" class="tab-content">
+                <div class="header-action-row">
+                    <div>
+                        <div class="section-category">UBICACIÓN Y VERIFICACIÓN</div>
+                        <h1 class="section-title">Mapa satelital de zonas</h1>
+                    </div>
+                    <span class="demo-notice">REQUIERE INTERNET</span>
+                </div>
+
+                <div class="map-layout">
+                    <div id="map-container"></div>
+                    <div class="card-panel">
+                        <div style="font-weight: 700; font-size: 15px; margin-bottom: 12px;">Guardar zona de trabajo</div>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Seleccione una finca y haga clic sobre el mapa, o escriba coordenadas tomadas en campo.</p>
+
+                        <div class="form-group">
+                            <label>Finca</label>
+                            <select class="form-select">
+                                <option>La Esperanza — Maíz</option>
+                                <option>El Recuerdo — Yuca</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Latitud</label>
+                            <input type="text" class="form-input" placeholder="Ej.: 8.946000" id="map-lat" value="8.946000">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Longitud</label>
+                            <input type="text" class="form-input" placeholder="Ej.: -75.445000" id="map-lng" value="-75.445000">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Radio aproximado (metros)</label>
+                            <input type="number" class="form-input" value="250">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción breve</label>
+                            <input type="text" class="form-input" placeholder="Lote o referencia principal">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ALERTAS Y RECOMENDACIONES -->
+            <section id="tab-alertas" class="tab-content">
+                <div class="section-category">APOYO A DECISIONES</div>
+                <h1 class="section-title">Alertas y recomendaciones</h1>
+
+                <div class="alert-box">
+                    <div class="alert-title">Revisar humedad en La Esperanza</div>
+                    <div class="alert-desc">El valor de 24% es demostrativo. Confirme la condición en terreno antes de tomar una decisión de riego.</div>
+                </div>
+            </section>
+
+            <!-- TAB 6: USUARIOS -->
+            <section id="tab-usuarios" class="tab-content">
+                <div class="section-category">ADMINISTRACIÓN</div>
+                <h1 class="section-title">Roles de la demostración</h1>
+
+                <div class="card-panel" style="padding: 0;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Rol</th>
+                                <th>Acceso principal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Administrador</b></td>
+                                <td style="color: var(--text-muted);">Consulta general y gestión de usuarios.</td>
+                            </tr>
+                            <tr>
+                                <td><b>Productor / cliente</b></td>
+                                <td style="color: var(--text-muted);">Registra sus fincas y observaciones.</td>
+                            </tr>
+                            <tr>
+                                <td><b>Asesor técnico</b></td>
+                                <td style="color: var(--text-muted);">Consulta datos y formula recomendaciones.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 7: GUÍA DEL PROTOTIPO -->
+            <section id="tab-guia" class="tab-content">
+                <div class="section-category">DOCUMENTACIÓN</div>
+                <h1 class="section-title">Guía del prototipo AgroSahagún</h1>
+
+                <div class="card-panel">
+                    <h3 style="font-size: 16px; margin-bottom: 8px;">Objetivo del proyecto</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                        Prototipo de bajo nivel diseñado para apoyar la toma de decisiones en pequeños y medianos productores agrícolas de la Sabana de Córdoba (Sahagún). Facilita el monitoreo de estado de suelos, humedad y georreferenciación de lotes.
+                    </p>
+                    <h3 style="font-size: 16px; margin-bottom: 8px;">Instrucciones para GitHub Pages</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+                        Este archivo single-page está listo para alojarse de forma gratuita en GitHub Pages renombrándolo como <code>index.html</code> en la raíz de tu repositorio.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Leaflet JS for Satellite Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let mapInitialized = false;
+        let map;
+
+        function handleLogin(event) {
+            event.preventDefault();
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'flex';
+        }
+
+        function handleLogout() {
+            document.getElementById('dashboard-view').style.display = 'none';
+            document.getElementById('login-view').style.display = 'flex';
+        }
+
+        function switchTab(tabId, element) {
+            // Update active state in sidebar
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab
+            const targetTab = document.getElementById('tab-' + tabId);
+            if(targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // Lazy initialize map when switching to map tab
+            if(tabId === 'mapa' && !mapInitialized) {
+                setTimeout(initMap, 100);
+            }
+        }
+
+        function initMap() {
+            mapInitialized = true;
+            // Coordenadas aproximadas para Sahagún, Córdoba
+            const sahagunCoords = [8.946000, -75.445000];
+            
+            map = L.map('map-container').setView(sahagunCoords, 13);
+
+            // Esri World Imagery (Satelital)
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri'
+            }).addTo(map);
+
+            // Marker para finca
+            const marker = L.marker(sahagunCoords).addTo(map);
+            marker.bindPopup("<b>Finca La Esperanza</b><br>Maíz - 2.5 ha").openPopup();
+
+            // Círculo de cobertura
+            L.circle(sahagunCoords, {
+                color: '#145a32',
+                fillColor: '#27ae60',
+                fillOpacity: 0.3,
+                radius: 250
+            }).addTo(map);
+
+            // Click listener para capturar coordenadas
+            map.on('click', function(e) {
+                document.getElementById('map-lat').value = e.latlng.lat.toFixed(6);
+                document.getElementById('map-lng').value = e.latlng.lng.toFixed(6);
+            });
+        }
+    </script>
+</body>
+</html>
